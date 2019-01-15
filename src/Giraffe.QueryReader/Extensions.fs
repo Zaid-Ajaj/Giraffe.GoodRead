@@ -31,7 +31,6 @@ module Extensions =
            return! createdHandler next ctx
         }
 
-    
     let plainText (input: string) : HttpHandler =
         setHttpHeader "Content-Type" "text/plain"
         >=> setBodyFromString input
@@ -39,7 +38,8 @@ module Extensions =
 module Async =
     let Try value =
         async {
-            match! Async.Catch value with
+            let! catched = value
+            match catched with
             | Choice1Of2 value -> return Ok value
             | Choice2Of2 err -> return Error err
         }

@@ -1,8 +1,5 @@
 namespace Giraffe.GoodRead
 
-open Giraffe
-open Microsoft.AspNetCore.Http
-
 type Reader<'a, 'b> = Reader of ('a -> 'b) 
 
 module Reader = 

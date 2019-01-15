@@ -33,37 +33,20 @@ type IUserStore =
     abstract getAll : unit -> Async<User list>
     abstract getById : int -> Async<Option<User>>
 
+  
 
-module Users =
-   
-    let getById userId =
-        require {
-            let! logger = service<ILogger>()
-            let! userStore = service<IUserStore>()
-            return async {
-                match! Async.Try (userStore.getById userId) with
-                | Ok (Some user) ->
-                    return toJson (Ok user)
-                | Ok None ->
-                    return setStatusCode 404 >=> toJson (Error "User was not found")
-                | Error ex ->
-                    do logger.LogError(ex, "Error while searching user")
-                    return setStatusCode 500 >=> toJson (Error "Internal server error occured")
-            }
+let getAllUsers() =
+    require {
+        let! logger = service<ILogger>()
+        let! userStore = service<IUserStore>()
+        return async {
+            match! Async.Try (userStore.getAll()) with
+            | Ok users -> return toJson users
+            | Error err ->
+                logger.LogError(err, "Error while getting all users")
+                return setStatusCode 500 >=> toJson (Error "Internal server error occured")
         }
-
-    let getAll() =
-        require {
-            let! logger = service<ILogger>()
-            let! userStore = service<IUserStore>()
-            return async {
-                match! Async.Try (userStore.getAll()) with
-                | Ok users -> return toJson users
-                | Error err ->
-                    logger.LogError(err, "Error while getting all users")
-                    return setStatusCode 500 >=> toJson (Error "Internal server error occured")
-            }
-        }
+    }
 
 let pass() = Expect.isTrue true "Passed"
 let fail() = Expect.isTrue false "Failed"
@@ -124,7 +107,7 @@ let tests =
     testList "Giraffe.GoodRead" [
     
         testCase "Dependencies are correctly resolved" <| fun () ->
-            let webApp = GET >=> route "/users" >=> Require.apply (Users.getAll())
+            let webApp = GET >=> route "/users" >=> Require.apply (getAllUsers())
             let logger = Mock.Of<ILogger>()
             let emptyUserList = [ ]
             let emptyUserStore = TestUserStore(emptyUserList)
