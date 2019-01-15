@@ -1,0 +1,23 @@
+source https://api.nuget.org/v3/index.json
+storage: none
+clitool dotnet-mono 0.5.4
+clitool dotnet-sourcelink 2.8.0
+nuget Argu
+nuget FSharp.Core
+nuget Expecto 
+nuget Serilog
+nuget Serilog.Sinks.Console
+nuget Serilog.Sinks.TestCorrelator
+nuget SourceLink.Create.CommandLine 2.8.0 copy_local: true
+nuget Giraffe
+nuget Microsoft.AspNetCore.Server.Kestrel
+nuget Microsoft.AspNetCore.Hosting
+nuget Microsoft.AspNetCore.TestHost
+nuget Microsoft.AspNetCore.Http
+nuget Fable.Remoting.Json
+
+group Build
+  framework: >= net45
+  source https://api.nuget.org/v3/index.json
+  nuget FAKE
+  github fsharp/FAKE modules/Octokit/Octokit.fsx
