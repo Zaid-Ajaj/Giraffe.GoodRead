@@ -5,9 +5,6 @@ open Giraffe
 open Giraffe.GoodRead
 open System
 open System.IO
-open System.Linq
-open Microsoft.AspNetCore.Http
-open System.Collections.Generic
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.TestHost
 open Microsoft.AspNetCore.Builder
@@ -40,7 +37,8 @@ let getAllUsers() =
         let! logger = service<ILogger>()
         let! userStore = service<IUserStore>()
         return async {
-            match! Async.Try (userStore.getAll()) with
+            let! users = Async.Try (userStore.getAll())
+            match users with
             | Ok users -> return toJson users
             | Error err ->
                 logger.LogError(err, "Error while getting all users")
