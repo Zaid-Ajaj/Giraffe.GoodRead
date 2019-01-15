@@ -2,22 +2,22 @@
 namespace System
 open System.Reflection
 
-[<assembly: AssemblyTitleAttribute("Giraffe.QueryReader")>]
-[<assembly: AssemblyProductAttribute("Giraffe.QueryReader")>]
-[<assembly: AssemblyVersionAttribute("1.2.0")>]
-[<assembly: AssemblyMetadataAttribute("ReleaseDate","2018-12-28T00:00:00.0000000")>]
-[<assembly: AssemblyFileVersionAttribute("1.2.0")>]
-[<assembly: AssemblyInformationalVersionAttribute("1.2.0")>]
+[<assembly: AssemblyTitleAttribute("Giraffe.GoodRead")>]
+[<assembly: AssemblyProductAttribute("Giraffe.GoodRead")>]
+[<assembly: AssemblyVersionAttribute("1.0.0")>]
+[<assembly: AssemblyMetadataAttribute("ReleaseDate","2019-01-15T00:00:00.0000000")>]
+[<assembly: AssemblyFileVersionAttribute("1.0.0")>]
+[<assembly: AssemblyInformationalVersionAttribute("1.0.0")>]
 [<assembly: AssemblyMetadataAttribute("ReleaseChannel","release")>]
-[<assembly: AssemblyMetadataAttribute("GitHash","db0fa53f1140f56172536cb272e3e1fd813193b3")>]
+[<assembly: AssemblyMetadataAttribute("GitHash","6e6b6a40d4357cd63ccc58ec649f852fd8e9809e")>]
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] AssemblyTitle = "Giraffe.QueryReader"
-    let [<Literal>] AssemblyProduct = "Giraffe.QueryReader"
-    let [<Literal>] AssemblyVersion = "1.2.0"
-    let [<Literal>] AssemblyMetadata_ReleaseDate = "2018-12-28T00:00:00.0000000"
-    let [<Literal>] AssemblyFileVersion = "1.2.0"
-    let [<Literal>] AssemblyInformationalVersion = "1.2.0"
+    let [<Literal>] AssemblyTitle = "Giraffe.GoodRead"
+    let [<Literal>] AssemblyProduct = "Giraffe.GoodRead"
+    let [<Literal>] AssemblyVersion = "1.0.0"
+    let [<Literal>] AssemblyMetadata_ReleaseDate = "2019-01-15T00:00:00.0000000"
+    let [<Literal>] AssemblyFileVersion = "1.0.0"
+    let [<Literal>] AssemblyInformationalVersion = "1.0.0"
     let [<Literal>] AssemblyMetadata_ReleaseChannel = "release"
-    let [<Literal>] AssemblyMetadata_GitHash = "db0fa53f1140f56172536cb272e3e1fd813193b3"
+    let [<Literal>] AssemblyMetadata_GitHash = "6e6b6a40d4357cd63ccc58ec649f852fd8e9809e"
