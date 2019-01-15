@@ -38,7 +38,7 @@ module Extensions =
 module Async =
     let Try value =
         async {
-            let! catched = value
+            let! catched = Async.Catch value
             match catched with
             | Choice1Of2 value -> return Ok value
             | Choice2Of2 err -> return Error err
