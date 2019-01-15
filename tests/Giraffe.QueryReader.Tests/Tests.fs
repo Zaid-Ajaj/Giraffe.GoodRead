@@ -30,8 +30,6 @@ type IUserStore =
     abstract getAll : unit -> Async<User list>
     abstract getById : int -> Async<Option<User>>
 
-  
-
 let getAllUsers() =
     require {
         let! logger = service<ILogger>()
@@ -104,7 +102,7 @@ let tests =
 
     testList "Giraffe.GoodRead" [
     
-        testCase "Dependencies are correctly resolved" <| fun () ->
+        testCase "Dependencies are correctly resolved when returning Async<HttpHandler>" <| fun () ->
             let webApp = GET >=> route "/users" >=> Require.apply (getAllUsers())
             let logger = Mock.Of<ILogger>()
             let emptyUserList = [ ]
@@ -123,4 +121,29 @@ let tests =
             |> readText
             |> fromJson<User list>
             |> fun users -> Expect.isEmpty users "Users list should be empty"
+
+        testCase "Dependencies are correctly resolved when require returns HttpHandler" <| fun () ->
+
+            let webApp = GET >=> route "/users" >=> Require.apply (require { return text "users" })
+            let setup (services: IServiceCollection) = services
+
+            let server = new TestServer(createHost webApp setup)
+            let client = server.CreateClient()
+        
+            client
+            |> httpGet "/users"
+            |> isStatus HttpStatusCode.OK
+            |> readTextEqual "users"
+
+        testCase "Dependencies are correctly resolved when require returns Task<HttpHandler>" <| fun () ->
+            let webApp = GET >=> route "/users" >=> Require.apply (require { return Task.FromResult(text "users") })
+            let setup (services: IServiceCollection) = services
+
+            let server = new TestServer(createHost webApp setup)
+            let client = server.CreateClient()
+        
+            client
+            |> httpGet "/users"
+            |> isStatus HttpStatusCode.OK
+            |> readTextEqual "users"        
     ]
