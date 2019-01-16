@@ -12,10 +12,50 @@ dotnet add package Giraffe.GoodRead
 
 # Usage
 
-This library consists of three things: 
+This library consists of a couple of things:
+ - `Require.services` function
  - `require` workflow
  - `service<'t>()` function 
  - `Require.apply` function
+
+`Require.service` might be the only one you need from the list, it lets resolve the services registered at asp.net core IoC container:
+```fs
+GET 
+  >=> route "/logger" 
+  >=> Require.services<ILogger>(
+        fun logger ->
+            logger.LogInformation("Using the ILogger") 
+            text "Finished using depdendencies"
+        )
+```
+`Require.services` is overloaded and allows to resolve multiple dependencies (for now up to 4):
+```fs
+GET 
+  >=> route "/logger"
+  >=> Require.services<ILogger, IConfiguration>(
+      fun logger config ->
+        // user dependencies and return HttpHandler
+        text "Finished using depdendencies") 
+```
+You can also return `Async<HttpHandler>` or `Task<HttpHandler>` in the function of `Require.services`:
+```fs
+GET 
+  >=> route "/users"
+  >=> Require.services<ILogger, IUserStore>(
+      fun logger users ->
+        logger.LogInformation("Requesting users...")
+        async {
+            let! allUsers = users.getAll()
+            return setStatusCode 200 >=> json allUsers
+        }
+    ) 
+```
+Now this is a bit hard to unit-test because you have to test the entire http pipeline with AspNet Core's [Integration tests](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.2) but you don't have to if you just want to unit-test a couple of functions. 
+
+To make a function unit-testable, You have to think about two things:
+ - What *dependencies* do you need
+ - How to map the *output* of the function to `HttpHandler`
+
 
 An example shows best how these are used
 ```fs
@@ -23,37 +63,84 @@ type User = { Id: int; Username: string }
 
 type IUserStore =
     abstract getAll : unit -> Async<User list>
-    abstract getById : int -> Async<Option<User>>
+    abstract findById : int -> Async<Option<User>>
 
-let getUserById userId =
+type FindUserResult = 
+    | Found of User
+    | NotFound 
+    | ServerError of exn
+
+let getUserById (userId: int) (logger: ILogger) (userStore: IUserStore) = 
+    async {
+        let! foundUser = Async.Try (userStore.findById userId)
+        match foundUser with 
+        | Ok (Some user) -> return Found user
+        | Ok None -> return NotFound
+        | Error err -> 
+            do logger.LogError(err, "Error while searching for user")
+            return ServerError err
+    }
+```
+Now you have  and how to map `FindUserResult` to `HttpHandler`. The latter is simple:
+```fs
+let mapUserResult = function 
+    | Found user -> json (Ok user)
+    | NotFound -> setStatusCode 404 >=> json (Error "User was not found")
+    | ServerError err -> setStatusCode 500 >=> json (Error "Internal server error") 
+```
+Now you can use `Require.services` again to resolve the dependencies, but you still need the user id from the request, this is done as follows:
+```fs
+GET 
+  >=> routef "/user/%d" (fun userId -> Require.services(getUserById userId, mapUserResult))
+```
+This works nicely because when your function `getUserById` doesn't return `HttpHandler` directly but returns some `Async<'t>` or `Task<'t>` then you have to provide the second argument which tells Giraffe how to map the `'t` to `HttpHandler`. 
+
+This is how you make your functions unit-testable. Only sometimes you don't really care about unit-testing and you just want to prototype things and write apps in rapid mode! Then allow me to introduce the `require` workflow:
+
+The `require` workflow is a simple implementation of a reader monad that allows you to require registered services, using the `service<'t>()` function, then you can start using the dependencies. Here is an example of using it:
+```fs
+let getAllUsers() =
+    require {
+        // require dependencies
+        let! logger = service<ILogger>()
+        let! userStore = service<IUserStore>()
+        // return Async<HttpHandler> or Task<HttpHandler>
+        return async {
+            let! users = Async.Catch (userStore.getAll())
+            match users with
+            | Choice1Of2 users -> return json users
+            | Choice2Of2 err ->
+                logger.LogError(err, "Error while getting all users")
+                return setStatusCode 500 >=> json (Error "Internal server error occured")
+        }
+    }
+
+// apply the requirements and turn getAllUsers into a HttpHandler:
+let webApp = route "/users" >=> Require.apply (getAllUsers())
+```
+if your function happens to have parameters itself, then just provide them from the request:
+```fs
+let getUserById userId = 
     require {
         let! logger = service<ILogger>()
         let! userStore = service<IUserStore>()
         return async {
-            match! Async.Try (userStore.getById userId) with
-            | Ok (Some user) ->
-                return json (Ok user)
-            | Ok None ->
-                return setStatusCode 404 >=> json (Error "User was not found")
-            | Error ex ->
-                do logger.LogError(ex, "Error while searching user")
-                return setStatusCode 500 >=> json (Error "Internal server error occured")
+            let! user = Async.Try (userStore.getAll())
+            match user with 
+            | Ok (Some user) -> return json (Ok user)
+            | Ok None -> return setStatusCode 404 >=> json (Error "User was not found")
+            | Error err -> 
+                do logger.LogError(err, "Error while searching for user")
+                return setStatusCode 500 >=> json (Error "Internal server error")
         }
     }
 
 
 let webApp = GET >=> routef "/user/%d" (getUserById >> Require.apply)
-
 ```
-The `require` workflow is a simple implementation of a reader monad that allows you to require registered services, using the `service<'t>()` function, then you can start using the dependencies. The workflow `getUserById` can be used as input for `Require.apply` as long as it returns any of:
- - `HttpHandler`
- - `Async<HttpHandler>` (e.g. the example above)
- - `Task<HttpHandler>` 
-
-Then `Require.apply` turns the workflow itself into a `HttpHandler` which makes it really easy and simple to build hanlders with dependency injection. 
 
 ## Unit Testing
-Testing the code with mock dependencies is really easy thanks to `TestServer` that ASP.NET provides:
+Testing the code with mock dependencies is really easy when using the `require` workflow thanks to `TestServer` from ASP.NET Core:
 ```fs
 testList "Giraffe.GoodRead" [
 

@@ -5,10 +5,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <Title>Giraffe.QueryReader</Title>
-    <Description>Alternative query binding mechanism for Giraffe apps</Description>
+    <Title>Giraffe.GoodRead</Title>
+    <Description>Practical dependency injection in Giraffe that gets out of your way</Description>
     <!-- summary is not migrated from project.json, but you can use the <Description> property for that if needed. -->
-    <PackageTags>f#, fsharp, giraffe, query, query-string</PackageTags>
+    <PackageTags>f#, fsharp, giraffe, dependency injection</PackageTags>
     <PackageProjectUrl>https://github.com/zaid-ajaj/Giraffe.QueryReader</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/zaid-ajaj/Giraffe.QueryReader/blob/master/LICENSE</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -26,9 +26,6 @@
     <Compile Include="Extensions.fs" />
     <Compile Include="Reader.fs" />
     <Compile Include="Require.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

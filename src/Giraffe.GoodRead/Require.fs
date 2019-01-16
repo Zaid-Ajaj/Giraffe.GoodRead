@@ -3,7 +3,6 @@ namespace Giraffe.GoodRead
 open Giraffe
 open Microsoft.AspNetCore.Http
 open System.Threading.Tasks
-open Microsoft.Extensions.Options
 
 [<AutoOpen>]
 module RequireImpl =
@@ -43,6 +42,36 @@ type Require() =
                 let! unwrapped = Async.AwaitTask asyncValue
                 return mapOutput unwrapped
             }
+        })
+
+    static member services<'t>(map: 't -> HttpHandler) : HttpHandler = 
+        Require.apply(require {
+            let! first = service<'t>()
+            return map first
+        })
+
+    static member services<'t, 'u>(map: 't -> 'u -> HttpHandler) : HttpHandler = 
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            return map first second
+        })
+
+    static member services<'t, 'u, 'w>(map: 't -> 'u -> 'w -> HttpHandler) : HttpHandler = 
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            return map first second third
+        })
+
+    static member services<'t, 'u, 'w, 'z>(map: 't -> 'u -> 'w -> 'z -> HttpHandler) : HttpHandler = 
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            let! forth = service<'z>()
+            return map first second third forth
         })
 
     static member services<'t>(map: 't -> Async<HttpHandler>) : HttpHandler =

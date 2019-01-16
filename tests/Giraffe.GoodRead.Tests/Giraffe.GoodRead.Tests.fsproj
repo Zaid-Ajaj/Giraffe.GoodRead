@@ -14,7 +14,7 @@
     <PackageReference Include="Moq" Version="4.10.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Giraffe.QueryReader\Giraffe.GoodRead.fsproj" />
+    <ProjectReference Include="..\..\src\Giraffe.GoodRead\Giraffe.GoodRead.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
