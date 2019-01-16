@@ -44,3 +44,147 @@ type Require() =
                 return mapOutput unwrapped
             }
         })
+
+    static member services<'t>(map: 't -> Async<HttpHandler>) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            return map first
+        })
+
+    static member services<'t>(map: 't -> Task<HttpHandler>) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            return map first
+        })
+
+    static member services<'t, 'u>(map: 't -> 'u -> Async<HttpHandler>) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            return map first second
+        })
+
+    static member services<'t, 'u>(map: 't -> 'u -> Task<HttpHandler>) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            return map first second
+        })
+
+    static member services<'t, 'u, 'w>(map: 't -> 'u -> 'w -> Task<HttpHandler>) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            return map first second third
+        })
+
+    static member services<'t, 'u, 'w>(map: 't -> 'u -> 'w -> Async<HttpHandler>) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            return map first second third
+        })
+
+    static member services<'t, 'u, 'w, 'z>(map: 't -> 'u -> 'w -> 'z -> Task<HttpHandler>) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            let! forth = service<'z>()
+            return map first second third forth
+        })
+
+    static member services<'t, 'u, 'w, 'z>(map: 't -> 'u -> 'w -> 'z -> Async<HttpHandler>) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            let! forth = service<'z>() 
+            return map first second third forth
+        })
+
+    static member services<'t, 'u>(map: 't -> Async<'u>, toHandler: 'u -> HttpHandler) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            return async {
+                let! result = map first
+                return toHandler result
+            }
+        })
+
+    static member services<'t, 'u>(map: 't -> Task<'u>, toHandler: 'u -> HttpHandler) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            return async {
+                let! result = Async.AwaitTask (map first)
+                return toHandler result
+            }
+        })
+
+    static member services<'t, 'u, 'w>(map: 't -> 'u -> Async<'w>, toHandler: 'w -> HttpHandler) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            return async {
+                let! result = map first second
+                return toHandler result
+            }
+        })
+
+    static member services<'t, 'u, 'w>(map: 't -> 'u -> Task<'w>, toHandler: 'w -> HttpHandler) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            return async {
+                let! result = Async.AwaitTask (map first second)
+                return toHandler result
+            }
+        }) 
+
+    static member services<'t, 'u, 'w, 'z>(map: 't -> 'u -> 'w -> Async<'z>, toHandler: 'z -> HttpHandler) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            return async {
+                let! result = map first second third
+                return toHandler result
+            }
+        })
+
+    static member services<'t, 'u, 'w, 'z>(map: 't -> 'u -> 'w -> Task<'z>, toHandler: 'z -> HttpHandler) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            return async {
+                let! result = Async.AwaitTask (map first second third)
+                return toHandler result
+            }
+        })
+
+    static member services<'t, 'u, 'w, 'z, 'y>(map: 't -> 'u -> 'w -> 'z -> Async<'y>, toHandler: 'y -> HttpHandler) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            let! forth = service<'z>()
+            return async {
+                let! result = map first second third forth
+                return toHandler result
+            }
+        })
+
+    static member services<'t, 'u, 'w, 'z, 'y>(map: 't -> 'u -> 'w -> 'z -> Task<'y>, toHandler: 'y -> HttpHandler) : HttpHandler =
+        Require.apply(require {
+            let! first = service<'t>()
+            let! second = service<'u>()
+            let! third = service<'w>()
+            let! forth = service<'z>()
+            return async {
+                let! result = Async.AwaitTask (map first second third forth)
+                return toHandler result
+            }
+        })
