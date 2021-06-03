@@ -83,12 +83,13 @@ let getTargetFramework tf =
     match tf with
     | StartsWith "net4" -> Full tf
     | StartsWith "netcoreapp" -> Core tf
+    | StartsWith "net5.0" -> Core tf
     | _ -> failwithf "Unknown TargetFramework %s" tf
 
 let getTargetFrameworksFromProjectFile (projFile : string)=
     let doc = Xml.XmlDocument()
     doc.Load(projFile)
-    doc.GetElementsByTagName("TargetFrameworks").[0].InnerText.Split(';')
+    doc.GetElementsByTagName("TargetFramework").[0].InnerText.Split(';')
     |> Seq.map getTargetFramework
     |> Seq.toList
 
@@ -296,8 +297,6 @@ Target "Release" DoNothing
   ==> "DotnetTest"
   ==> "DotnetPack"
   ==> "Publish"
-  ==> "GitRelease"
-  ==> "GitHubRelease"
   ==> "Release"
 
 "DotnetRestore"

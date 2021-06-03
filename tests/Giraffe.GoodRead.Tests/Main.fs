@@ -8,8 +8,8 @@ module AssemblyInfo =
     let metaDataValue  (mda : AssemblyMetadataAttribute) = mda.Value
     let getMetaDataAttribute (assembly : Assembly) key =
         assembly.GetCustomAttributes(typedefof<AssemblyMetadataAttribute>)
-                              |> Seq.cast<AssemblyMetadataAttribute>
-                              |> Seq.find(fun x -> x.Key = key)
+            |> Seq.cast<AssemblyMetadataAttribute>
+            |> Seq.find(fun x -> x.Key = key)
 
     let getReleaseDate assembly =
         "ReleaseDate"
@@ -30,5 +30,5 @@ let main argv =
         let releaseDate = AssemblyInfo.getReleaseDate assembly
         let githash  = AssemblyInfo.getGitHash assembly
         printfn "%s - %A - %s - %s" name.Name version releaseDate githash
-    
+
     Tests.runTestsInAssembly defaultConfig argv

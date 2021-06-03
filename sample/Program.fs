@@ -2,20 +2,20 @@ open System
 open System.Threading.Tasks
 open Giraffe
 open Giraffe.GoodRead
-open FSharp.Control.Tasks.V2
+open FSharp.Control.Tasks
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 
-type Maybe<'a> = 
+type Maybe<'a> =
   | Nothing
   | Just of 'a
 
 type Rec = { First: string; Job: Maybe<string> }
 
-let webApp : HttpHandler = 
+let webApp : HttpHandler =
   choose [ GET >=> route "/index" >=> text "Index"
            POST >=> route "/echo" >=> text "Echo" ]
 

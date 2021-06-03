@@ -3,9 +3,9 @@ namespace Giraffe.GoodRead
 open System
 open Giraffe
 open Microsoft.AspNetCore.Http
-open FSharp.Control.Tasks.V2
 open System.Threading.Tasks
 open System.Globalization
+open FSharp.Control.Tasks
 
 [<AutoOpen>]
 module Extensions =

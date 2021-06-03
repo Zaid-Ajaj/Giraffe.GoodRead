@@ -16,9 +16,9 @@ open Expecto.CSharp
 open Moq;
 open Microsoft.Extensions.Logging
 open Newtonsoft.Json
-open Giraffe.Serialization.Json
+open FSharp.Control.Tasks
 
-let jsonSerializer = Fable.Remoting.Json.FableJsonConverter() 
+let jsonSerializer = Fable.Remoting.Json.FableJsonConverter()
 let serialize (x: 'a) =  JsonConvert.SerializeObject(x, jsonSerializer)
 
 let toJson (x: 'a) = setBodyFromString (serialize x)
@@ -44,16 +44,29 @@ let getAllUsers() =
         }
     }
 
+let getAllUsersTask() =
+    require {
+        let! logger = service<ILogger>()
+        let! userStore = service<IUserStore>()
+        return task {
+            let! users = Async.Try (userStore.getAll())
+            match users with
+            | Ok users -> return toJson users
+            | Error err ->
+                logger.LogError(err, "Error while getting all users")
+                return setStatusCode 500 >=> toJson (Error "Internal server error occured")
+        }
+    }
 
 let pass() = Expect.isTrue true "Passed"
 let fail() = Expect.isTrue false "Failed"
 
 let appBuilder (webApp: HttpHandler) =
-  fun  (app: IApplicationBuilder) -> app.UseGiraffe webApp
+    fun (app: IApplicationBuilder) -> app.UseGiraffe webApp
 
 let configureServices (services: IServiceCollection) =
-  services.AddGiraffe()
-  |> ignore
+    services.AddGiraffe()
+    |> ignore
 
 let createHost (webApp: HttpHandler) (setupServices: IServiceCollection -> IServiceCollection) =
     WebHostBuilder()
@@ -102,20 +115,40 @@ type TestUserStore(users) =
 let tests =
 
     testList "Giraffe.GoodRead" [
-    
+
         testCase "Dependencies are correctly resolved when returning Async<HttpHandler>" <| fun () ->
             let webApp = GET >=> route "/users" >=> Require.apply (getAllUsers())
             let logger = Mock.Of<ILogger>()
+            let usersList = [ { Id = 1; Username = "John" } ]
+            let userStore = TestUserStore(usersList)
+
+            let setup (services: IServiceCollection) =
+                services.AddSingleton<ILogger>(logger)
+                        .AddSingleton<IUserStore>(userStore)
+
+            let server = new TestServer(createHost webApp setup)
+            let client = server.CreateClient()
+
+            client
+            |> httpGet "/users"
+            |> isStatus HttpStatusCode.OK
+            |> readText
+            |> fromJson<User list>
+            |> fun users -> Expect.equal users usersList "Users list should be the same"
+
+        testCase "Dependencies are correctly resolved when returning Task<HttpHandler>" <| fun () ->
+            let webApp = GET >=> route "/users" >=> Require.apply (getAllUsersTask())
+            let logger = Mock.Of<ILogger>()
             let emptyUserList = [ ]
             let emptyUserStore = TestUserStore(emptyUserList)
-        
+
             let setup (services: IServiceCollection) =
                 services.AddSingleton<ILogger>(logger)
                         .AddSingleton<IUserStore>(emptyUserStore)
-        
+
             let server = new TestServer(createHost webApp setup)
             let client = server.CreateClient()
-        
+
             client
             |> httpGet "/users"
             |> isStatus HttpStatusCode.OK
@@ -130,7 +163,7 @@ let tests =
 
             let server = new TestServer(createHost webApp setup)
             let client = server.CreateClient()
-        
+
             client
             |> httpGet "/users"
             |> isStatus HttpStatusCode.OK
@@ -142,9 +175,9 @@ let tests =
 
             let server = new TestServer(createHost webApp setup)
             let client = server.CreateClient()
-        
+
             client
             |> httpGet "/users"
             |> isStatus HttpStatusCode.OK
-            |> readTextEqual "users"        
+            |> readTextEqual "users"
     ]

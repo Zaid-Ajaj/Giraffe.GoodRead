@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <Title>Giraffe.GoodRead</Title>
-    <Description>Practical dependency injection in Giraffe that gets out of your way</Description>
-    <!-- summary is not migrated from project.json, but you can use the <Description> property for that if needed. -->
-    <PackageTags>f#, fsharp, giraffe, dependency injection</PackageTags>
-    <PackageProjectUrl>https://github.com/zaid-ajaj/Giraffe.GoodRead</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/zaid-ajaj/Giraffe.GoodRead/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <RepositoryType>git</RepositoryType>
-    <Authors>Zaid Ajaj</Authors>
-    <RepositoryUrl>https://github.com/zaid-ajaj/Giraffe.GoodRead</RepositoryUrl>
-    <!-- owners is not supported in MSBuild -->
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <Optimize>true</Optimize>
-    <Tailcalls>true</Tailcalls>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Extensions.fs" />
-    <Compile Include="Reader.fs" />
-    <Compile Include="Require.fs" />
-  </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+    <PropertyGroup>
+        <TargetFrameworks>net5.0</TargetFrameworks>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup>
+        <Title>Giraffe.GoodRead</Title>
+        <Description>Practical dependency injection in Giraffe that gets out of your way</Description>
+        <PackageTags>f#, fsharp, giraffe, dependency injection</PackageTags>
+        <PackageProjectUrl>https://github.com/zaid-ajaj/Giraffe.GoodRead</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/zaid-ajaj/Giraffe.GoodRead/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <RepositoryType>git</RepositoryType>
+        <Authors>Zaid Ajaj</Authors>
+        <RepositoryUrl>https://github.com/zaid-ajaj/Giraffe.GoodRead</RepositoryUrl>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <Optimize>true</Optimize>
+        <Tailcalls>true</Tailcalls>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="AssemblyInfo.fs" />
+        <Compile Include="Extensions.fs" />
+        <Compile Include="Reader.fs" />
+        <Compile Include="Require.fs" />
+    </ItemGroup>
+    <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

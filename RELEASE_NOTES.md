@@ -1,3 +1,6 @@
+#### 2.0.0 - 2021-06-03
+* Update to Giraffe v5 and net5
+
 #### 1.2.0 - 2019-01-16
 * Remove Microsoft.Extensions.DependencyInjection from dependencies
 

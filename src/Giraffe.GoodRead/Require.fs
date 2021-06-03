@@ -9,12 +9,12 @@ module RequireImpl =
 
     let require<'t> = ReaderBuilder<HttpContext, 't>()
 
-    let getService<'t> (context : HttpContext) : 't = 
-      if typeof<'t>.GUID = typeof<HttpContext>.GUID
-      then context |> unbox<'t>
-      else context.GetService<'t>()
+    let getService<'t> (context : HttpContext) : 't =
+        if typeof<'t>.GUID = typeof<HttpContext>.GUID
+        then context |> unbox<'t>
+        else context.GetService<'t>()
 
-    let service<'t>() = Reader (fun (httpContext: HttpContext) -> getService<'t>(httpContext)) 
+    let service<'t>() = Reader (fun (httpContext: HttpContext) -> getService<'t>(httpContext))
 
 type Require() =
     static member apply(inputReader : Reader<HttpContext, HttpHandler>) : HttpHandler =
@@ -44,20 +44,20 @@ type Require() =
             }
         })
 
-    static member services<'t>(map: 't -> HttpHandler) : HttpHandler = 
+    static member services<'t>(map: 't -> HttpHandler) : HttpHandler =
         Require.apply(require {
             let! first = service<'t>()
             return map first
         })
 
-    static member services<'t, 'u>(map: 't -> 'u -> HttpHandler) : HttpHandler = 
+    static member services<'t, 'u>(map: 't -> 'u -> HttpHandler) : HttpHandler =
         Require.apply(require {
             let! first = service<'t>()
             let! second = service<'u>()
             return map first second
         })
 
-    static member services<'t, 'u, 'w>(map: 't -> 'u -> 'w -> HttpHandler) : HttpHandler = 
+    static member services<'t, 'u, 'w>(map: 't -> 'u -> 'w -> HttpHandler) : HttpHandler =
         Require.apply(require {
             let! first = service<'t>()
             let! second = service<'u>()
@@ -65,7 +65,7 @@ type Require() =
             return map first second third
         })
 
-    static member services<'t, 'u, 'w, 'z>(map: 't -> 'u -> 'w -> 'z -> HttpHandler) : HttpHandler = 
+    static member services<'t, 'u, 'w, 'z>(map: 't -> 'u -> 'w -> 'z -> HttpHandler) : HttpHandler =
         Require.apply(require {
             let! first = service<'t>()
             let! second = service<'u>()
@@ -130,7 +130,7 @@ type Require() =
             let! first = service<'t>()
             let! second = service<'u>()
             let! third = service<'w>()
-            let! forth = service<'z>() 
+            let! forth = service<'z>()
             return map first second third forth
         })
 
@@ -170,7 +170,7 @@ type Require() =
                 let! result = Async.AwaitTask (map first second)
                 return toHandler result
             }
-        }) 
+        })
 
     static member services<'t, 'u, 'w, 'z>(map: 't -> 'u -> 'w -> Async<'z>, toHandler: 'z -> HttpHandler) : HttpHandler =
         Require.apply(require {
