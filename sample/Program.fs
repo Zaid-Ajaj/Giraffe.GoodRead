@@ -2,7 +2,6 @@ open System
 open System.Threading.Tasks
 open Giraffe
 open Giraffe.GoodRead
-open FSharp.Control.Tasks
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Builder

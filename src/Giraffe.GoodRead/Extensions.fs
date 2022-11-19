@@ -5,7 +5,6 @@ open Giraffe
 open Microsoft.AspNetCore.Http
 open System.Threading.Tasks
 open System.Globalization
-open FSharp.Control.Tasks
 
 [<AutoOpen>]
 module Extensions =
