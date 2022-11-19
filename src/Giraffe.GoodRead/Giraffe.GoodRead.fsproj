@@ -14,6 +14,7 @@
         <RepositoryType>git</RepositoryType>
         <Authors>Zaid Ajaj</Authors>
         <RepositoryUrl>https://github.com/zaid-ajaj/Giraffe.GoodRead</RepositoryUrl>
+        <PackageVersion>2.1.0</PackageVersion>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <Optimize>true</Optimize>

@@ -1,6 +1,5 @@
 source https://api.nuget.org/v3/index.json
 storage: none
-clitool dotnet-mono 0.5.4
 clitool dotnet-sourcelink 2.8.0
 nuget Argu
 nuget FSharp.Core
